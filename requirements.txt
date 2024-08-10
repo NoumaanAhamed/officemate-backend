@@ -1,0 +1,10 @@
+langchain
+langchain-community
+langchainhub 
+langchain-chroma 
+bs4
+langchain-openai
+pypdf
+fastapi
+uvicorn
+python-multipart

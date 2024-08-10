@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Website with Chatbot</title>
+</head>
+<body>
+    <h1>Welcome to Our Company</h1>
+    <p>This is a sample company website with an integrated chatbot.</p>
+    
+    <script src="http://localhost:8000/chatbot_script/comp3"></script>
+</body>
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #chatOutput {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            background-color: #007BFF;
+            color: #fff;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chatbot Test</h1>
+    <div id="chatOutput"></div>
+    <input type="text" id="messageInput" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const chatOutput = document.getElementById('chatOutput');
+            const message = messageInput.value.trim();
+
+            if (message === '') {
+                alert('Please enter a message.');
+                return;
+            }
+
+            fetch('http://localhost:8000/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    company_id: 'comp4',
+                    message: message
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text) });
+                }
+                return response.json();
+            })
+            .then(data => {
+                chatOutput.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+                chatOutput.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`;
+                messageInput.value = ''; // Clear the input field
+                chatOutput.scrollTop = chatOutput.scrollHeight; // Scroll to the bottom
+            })
+            .catch(error => {
+                console.error('Error:', error.message);
+                chatOutput.innerHTML += `<p style="color: red;"><strong>Error:</strong> ${error.message}</p>`;
+                chatOutput.scrollTop = chatOutput.scrollHeight;
+            });
+        }
+    </script>
+</body>
+</html> -->
