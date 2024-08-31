@@ -3,99 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Company Website with Chatbot</title>
-</head>
-<body>
-    <h1>Welcome to Our Company</h1>
-    <p>This is a sample company website with an integrated chatbot.</p>
-    
-    <script src="http://localhost:8000/chatbot_script/comp3"></script>
-</body>
-</html>
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot Test</title>
+    <title>AI Chatbot Platform</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        #chatOutput {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            height: 200px;
-            overflow-y: auto;
-            margin-bottom: 10px;
-        }
-        input[type="text"] {
-            width: calc(100% - 22px);
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-        button {
-            padding: 10px 20px;
-            border-radius: 5px;
-            border: none;
-            background-color: #007BFF;
-            color: #fff;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
+        /* ... (keep the existing styles) ... */
     </style>
 </head>
 <body>
-    <h1>Chatbot Test</h1>
-    <div id="chatOutput"></div>
-    <input type="text" id="messageInput" placeholder="Type your message..." />
-    <button onclick="sendMessage()">Send</button>
+    <h1>AI Chatbot Platform</h1>
+    
+    <div class="container">
+        <h2>Create Chatbot</h2>
+        <form id="chatbotForm">
+            <label for="companyId">Company ID:</label>
+            <input type="text" id="companyId" required>
+            
+            <label for="files">Upload PDF Documents:</label>
+            <input type="file" id="files" multiple accept=".pdf" required>
+            
+            <button type="submit" id="submitBtn">Generate Chatbot</button>
+        </form>
+        <div id="error"></div>
+        <div id="success"></div>
+    </div>
+
+    <div class="container" id="embedScriptContainer" style="display: none;">
+        <h2>Embed Script</h2>
+        <p>Copy and paste this script tag into your website to embed the chatbot:</p>
+        <pre id="embedScript"></pre>
+    </div>
 
     <script>
-        function sendMessage() {
-            const messageInput = document.getElementById('messageInput');
-            const chatOutput = document.getElementById('chatOutput');
-            const message = messageInput.value.trim();
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('chatbotForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const errorDiv = document.getElementById('error');
+            const successDiv = document.getElementById('success');
+            const embedScriptContainer = document.getElementById('embedScriptContainer');
+            const embedScriptPre = document.getElementById('embedScript');
 
-            if (message === '') {
-                alert('Please enter a message.');
-                return;
-            }
-
-            fetch('http://localhost:8000/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    company_id: 'comp4',
-                    message: message
-                })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => { throw new Error(text) });
-                }
-                return response.json();
-            })
-            .then(data => {
-                chatOutput.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
-                chatOutput.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`;
-                messageInput.value = ''; // Clear the input field
-                chatOutput.scrollTop = chatOutput.scrollHeight; // Scroll to the bottom
-            })
-            .catch(error => {
-                console.error('Error:', error.message);
-                chatOutput.innerHTML += `<p style="color: red;"><strong>Error:</strong> ${error.message}</p>`;
-                chatOutput.scrollTop = chatOutput.scrollHeight;
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // Prevent form submission
+                handleSubmit();
             });
-        }
+
+            async function handleSubmit() {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Processing...';
+                errorDiv.textContent = '';
+                successDiv.textContent = '';
+                embedScriptContainer.style.display = 'none';
+
+                const companyId = document.getElementById('companyId').value;
+                const files = document.getElementById('files').files;
+
+                if (!companyId || files.length === 0) {
+                    errorDiv.textContent = 'Please fill in all fields.';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Generate Chatbot';
+                    return;
+                }
+
+                const formData = new FormData();
+                for (let i = 0; i < files.length; i++) {
+                    formData.append('files', files[i]);
+                }
+
+                try {
+                    // Upload documents
+                    const uploadResponse = await fetch(`http://localhost:8000/upload_documents/${companyId}`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!uploadResponse.ok) {
+                        throw new Error('Failed to upload documents');
+                    }
+
+                    // Generate embed script
+                    const scriptResponse = await fetch(`http://localhost:8000/chatbot_script/${companyId}`);
+                    
+                    if (!scriptResponse.ok) {
+                        throw new Error('Failed to generate embed script');
+                    }
+
+                    const scriptContent = await scriptResponse.text();
+                    
+                    // Display success message
+                    successDiv.textContent = 'Chatbot created successfully!';
+                    
+                    // Display embed script
+                    embedScriptPre.textContent = `<script src="http://localhost:8000/chatbot_script/${companyId}"><\/script>`;
+                    embedScriptContainer.style.display = 'block';
+
+                } catch (error) {
+                    errorDiv.textContent = 'An error occurred: ' + error.message;
+                    console.error('Error:', error);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Generate Chatbot';
+                }
+            }
+        });
     </script>
 </body>
-</html> -->
+</html>

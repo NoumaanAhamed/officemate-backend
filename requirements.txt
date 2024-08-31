@@ -8,3 +8,4 @@ pypdf
 fastapi
 uvicorn
 python-multipart
+langchain-groq
